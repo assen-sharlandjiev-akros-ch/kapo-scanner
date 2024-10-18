@@ -27,4 +27,19 @@ public class KapoScannerConfiguration {
   FileScannerRoute fileScannerRoute(final ApplicationArguments arguments, final AtomicBoolean scanComplete) {
     return new FileScannerRoute(arguments, scanComplete);
   }
+
+  @Bean
+  ImageRoute imageRoute(final ApplicationArguments arguments) {
+    return new ImageRoute(arguments);
+  }
+
+  @Bean
+  VideoRoute videoRoute(final ApplicationArguments arguments) {
+    return new VideoRoute(arguments);
+  }
+
+  @Bean
+  TextRoute textRoute(final ApplicationArguments arguments) {
+    return new TextRoute(arguments);
+  }
 }

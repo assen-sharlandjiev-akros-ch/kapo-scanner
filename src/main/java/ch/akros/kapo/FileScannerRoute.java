@@ -8,20 +8,18 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.file.GenericFile;
 import org.apache.tika.Tika;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.util.CollectionUtils;
 
-public class FileScannerRoute extends RouteBuilder {
+public class FileScannerRoute extends AbstractRouteBuilder {
 
-  private final ApplicationArguments arguments;
   private final AtomicBoolean scanComplete;
   private Tika tika;
 
   public FileScannerRoute(final ApplicationArguments arguments, final AtomicBoolean scanComplete) {
-    this.arguments = arguments;
+    super(arguments);
     this.scanComplete = scanComplete;
     try {
       this.tika = new Tika();
@@ -32,14 +30,14 @@ public class FileScannerRoute extends RouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    List<String> nonOptionArgs = arguments.getNonOptionArgs();
-    final var path =  CollectionUtils.isEmpty(nonOptionArgs) ? "." : nonOptionArgs.get(0);
+    final List<String> nonOptionArgs = getNonOptionArgs();
+    final var path = CollectionUtils.isEmpty(nonOptionArgs) ? "." : nonOptionArgs.get(0);
     final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&idempotentRepository=#repo", path);
     from(fromURI)
         .process(e -> scanComplete.set(Objects.isNull(e.getIn().getBody())))
         .filter(e -> Objects.nonNull(e.getIn().getBody()))
         .process(contentTypeProcessor())
-        .log("[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]");
+        .to("direct:contentTypeRoute");
   }
 
   private Processor contentTypeProcessor() {
@@ -51,7 +49,7 @@ public class FileScannerRoute extends RouteBuilder {
         try {
           final var mediaType = tika.detect(file);
           e.getIn().setHeader("CamelFileMediaType", mediaType);
-        } catch (IOException e1) {
+        } catch (final IOException e1) {
           log.error("Fialed to detect tika media type. Error: {}", e.getMessage());
         }
       }
