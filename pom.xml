@@ -65,6 +65,13 @@
       <artifactId>tika-xmp</artifactId>
       <version>${tika.version}</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.tika</groupId>
+      <artifactId>tika-parser-sqlite3-package</artifactId>
+      <version>${tika.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>

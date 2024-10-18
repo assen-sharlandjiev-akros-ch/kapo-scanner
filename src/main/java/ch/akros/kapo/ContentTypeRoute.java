@@ -1,6 +1,7 @@
 package ch.akros.kapo;
 
-import org.apache.camel.LoggingLevel;
+import static org.apache.camel.LoggingLevel.WARN;
+
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +20,10 @@ public class ContentTypeRoute extends RouteBuilder {
           .to("direct:textRoute")
         .when(simple("${header.CamelFileContentType} startsWith 'application/vnd.openxmlformats-officedocument'"))
           .to("direct:textRoute")
+        .when(simple("${header.CamelFileMediaType} startsWith 'application/x-sqlite3'"))
+          .to("direct:sqlLiteRoute")
         .otherwise()
-          .log(LoggingLevel.TRACE, "[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
+          .log(WARN, "[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
   }
 
 }

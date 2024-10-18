@@ -42,4 +42,14 @@ public class KapoScannerConfiguration {
   TextRoute textRoute(final ApplicationArguments arguments) {
     return new TextRoute(arguments);
   }
+
+  @Bean
+  SqlLite3Route sqlLite3Route(final ApplicationArguments arguments) {
+    return new SqlLite3Route(arguments);
+  }
+
+  @Bean
+  IphoneSmsDbRoute iphoneSmsDbRoute(final ApplicationArguments arguments) {
+    return new IphoneSmsDbRoute(arguments);
+  }
 }
