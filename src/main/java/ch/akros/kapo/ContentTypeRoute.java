@@ -18,6 +18,8 @@ public class ContentTypeRoute extends RouteBuilder {
           .to("direct:videoRoute")
         .when(simple("${header.CamelFileContentType} startsWith 'text'"))
           .to("direct:textRoute")
+        .when(simple("${header.CamelFileContentType} startsWith 'application/pdf'"))
+          .to("direct:textRoute")
         .when(simple("${header.CamelFileContentType} startsWith 'application/vnd.openxmlformats-officedocument'"))
           .to("direct:textRoute")
         .when(simple("${header.CamelFileMediaType} startsWith 'application/x-sqlite3'"))

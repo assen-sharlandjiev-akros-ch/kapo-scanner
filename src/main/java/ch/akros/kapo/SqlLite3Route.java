@@ -13,17 +13,19 @@ public class SqlLite3Route extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getOutputPath("video");
+    final var outoutPath = getOutputPath("sqllite");
+    final var toFile = "file:".concat(outoutPath);
     from("direct:sqlLiteRoute")
         .process(tikaProcessor())
+        .process(fileMetadataProcessor())
+        .log("[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]")
         .choice()
         .when(isIphoneSmsDB())
-          .log("[SQLLite3][${file:name}][Tika MediaType: ${in.header['CamelFileMediaType']}][${in.header['TikaMetadata']}]")
-          .log("${in.header['TikaText']}")
+          .to(toFile)
           .to("direct:iphoneSmsDbRoute")
         .otherwise()
           .log("[SQLLite3][${file:name}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsuported SQLLite3 database][${in.header['TikaMetadata']}]")
-        .to("file:".concat(outoutPath));
+          .to(toFile);
   }
 
   private Predicate isIphoneSmsDB() {
