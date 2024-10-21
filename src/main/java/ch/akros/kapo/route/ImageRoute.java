@@ -1,8 +1,10 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import org.apache.camel.Exchange;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ImageRoute extends AbstractRouteBuilder {
 
   ImageRoute(final ApplicationArguments arguments) {
@@ -11,7 +13,7 @@ public class ImageRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getOutputPath("images");
+    final var outoutPath = getTargetPath("images");
     final var toFile = "file:".concat(outoutPath);
     from("direct:imageRoute")
         .to(toFile)

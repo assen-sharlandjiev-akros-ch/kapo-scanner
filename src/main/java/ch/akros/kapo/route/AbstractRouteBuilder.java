@@ -1,4 +1,4 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
@@ -28,6 +28,8 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.boot.ApplicationArguments;
+
+import ch.akros.kapo.domain.FileMetadata;
 
 public abstract class AbstractRouteBuilder extends RouteBuilder {
 
@@ -60,7 +62,7 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
     return Optional.ofNullable(arguments.getOptionValues(name)).map(l -> l.getFirst()).orElse(defaultValue);
   }
 
-  protected String getOutputPath(final String contentType) throws IOException {
+  protected String getTargetPath(final String contentType) throws IOException {
     final var outoutPath = Path.of(getOptionValue("target", "/target"), contentType);
     if (!outoutPath.toFile().exists()) {
       Files.createDirectories(outoutPath);

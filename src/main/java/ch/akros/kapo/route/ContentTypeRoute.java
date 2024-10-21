@@ -1,4 +1,4 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import static org.apache.camel.LoggingLevel.WARN;
 

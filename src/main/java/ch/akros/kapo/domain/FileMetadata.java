@@ -1,4 +1,4 @@
-package ch.akros.kapo;
+package ch.akros.kapo.domain;
 
 import java.time.Instant;
 import java.util.Map;

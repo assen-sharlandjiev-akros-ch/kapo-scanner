@@ -1,9 +1,11 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import static org.apache.camel.Exchange.FILE_NAME;
 
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IphoneSmsDbRoute extends AbstractRouteBuilder {
 
   IphoneSmsDbRoute(final ApplicationArguments arguments) {
@@ -12,7 +14,7 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getOutputPath("sqllite");
+    final var outoutPath = getTargetPath("sqllite");
     final var toFile = "file:".concat(outoutPath);
     from("direct:iphoneSmsDbRoute")
         .setBody(header("fileMetadata"))

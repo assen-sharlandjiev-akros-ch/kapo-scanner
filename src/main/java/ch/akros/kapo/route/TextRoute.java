@@ -1,10 +1,12 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import static org.apache.camel.Exchange.FILE_NAME;
 
 import org.apache.tika.Tika;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TextRoute extends AbstractRouteBuilder {
 
   TextRoute(final ApplicationArguments arguments) {
@@ -18,7 +20,7 @@ public class TextRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getOutputPath("text");
+    final var outoutPath = getTargetPath("text");
     final var toFile = "file:".concat(outoutPath);
     from("direct:textRoute")
         .to(toFile)

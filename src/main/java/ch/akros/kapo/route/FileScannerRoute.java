@@ -1,4 +1,4 @@
-package ch.akros.kapo;
+package ch.akros.kapo.route;
 
 import static java.util.Objects.nonNull;
 
@@ -11,22 +11,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;
 import org.springframework.boot.ApplicationArguments;
-import org.springframework.util.CollectionUtils;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FileScannerRoute extends AbstractRouteBuilder {
 
   private final AtomicBoolean scanComplete;
 
-  public FileScannerRoute(final ApplicationArguments arguments, final AtomicBoolean scanComplete) {
+  FileScannerRoute(final ApplicationArguments arguments, final AtomicBoolean scanComplete) {
     super(arguments);
     this.scanComplete = scanComplete;
   }
 
   @Override
   public void configure() throws Exception {
-    final var nonOptionArgs = getNonOptionArgs();
-    final var path = CollectionUtils.isEmpty(nonOptionArgs) ? "/source" : nonOptionArgs.get(0);
-    final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&idempotentRepository=#repo", path);
+    final var sourcePath = getOptionValue("source", "/source");
+    final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&idempotentRepository=#repo", sourcePath);
     from(fromURI)
         .process(e -> scanComplete.set(Objects.isNull(e.getIn().getBody())))
         .filter(e -> Objects.nonNull(e.getIn().getBody()))
