@@ -5,7 +5,6 @@ import static java.util.Objects.nonNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,8 +24,8 @@ public class FileScannerRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final List<String> nonOptionArgs = getNonOptionArgs();
-    final var path = CollectionUtils.isEmpty(nonOptionArgs) ? "." : nonOptionArgs.get(0);
+    final var nonOptionArgs = getNonOptionArgs();
+    final var path = CollectionUtils.isEmpty(nonOptionArgs) ? "/source" : nonOptionArgs.get(0);
     final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&idempotentRepository=#repo", path);
     from(fromURI)
         .process(e -> scanComplete.set(Objects.isNull(e.getIn().getBody())))

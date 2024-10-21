@@ -15,6 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.camel.Exchange;
@@ -55,12 +56,12 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
     return arguments.getOptionValues(name);
   }
 
-  protected String getOptionValue(final String name) {
-    return arguments.getOptionValues(name).getFirst();
+  protected String getOptionValue(final String name, final String defaultValue) {
+    return Optional.ofNullable(arguments.getOptionValues(name)).map(l -> l.getFirst()).orElse(defaultValue);
   }
 
   protected String getOutputPath(final String contentType) throws IOException {
-    final var outoutPath = Path.of(getOptionValue("output"), contentType);
+    final var outoutPath = Path.of(getOptionValue("target", "/target"), contentType);
     if (!outoutPath.toFile().exists()) {
       Files.createDirectories(outoutPath);
     }
