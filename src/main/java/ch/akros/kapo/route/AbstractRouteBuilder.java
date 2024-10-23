@@ -2,6 +2,7 @@ package ch.akros.kapo.route;
 
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.camel.Exchange.EXCEPTION_CAUGHT;
 import static org.apache.camel.Exchange.FILE_NAME;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
@@ -111,6 +112,15 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       e.getIn().setHeader("fileMetadata", fileMetadata);
       e.getIn().setHeader("fileMetadataJsonFileName", fileMetadataJsonFileName);
       e.getIn().setHeader("tikaTextFileName", tikaTextFileName);
+    };
+  }
+
+
+  protected Processor onExceptionProcessor() {
+    return exchange -> {
+      final var ex = exchange.getProperty(EXCEPTION_CAUGHT, Exception.class);
+      final var file = exchange.getIn().getHeader(Exchange.FILE_NAME);
+      log.error("[{}][{}][{}}", file, ex.getClass(), ex.getMessage());
     };
   }
 }

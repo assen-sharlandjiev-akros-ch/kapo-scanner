@@ -22,6 +22,10 @@ public class TextRoute extends AbstractRouteBuilder {
   public void configure() throws Exception {
     final var outoutPath = getTargetPath("text");
     final var toFile = "file:".concat(outoutPath);
+    onException(Exception.class)
+    .onExceptionOccurred(onExceptionProcessor())
+    .continued(true)
+    .maximumRedeliveries(0);
     from("direct:textRoute")
         .to(toFile)
         .process(tikaProcessor())

@@ -15,6 +15,10 @@ public class ImageRoute extends AbstractRouteBuilder {
   public void configure() throws Exception {
     final var outoutPath = getTargetPath("images");
     final var toFile = "file:".concat(outoutPath);
+    onException(Exception.class)
+    .onExceptionOccurred(onExceptionProcessor())
+    .continued(true)
+    .maximumRedeliveries(0);
     from("direct:imageRoute")
         .to(toFile)
         .process(tikaProcessor())

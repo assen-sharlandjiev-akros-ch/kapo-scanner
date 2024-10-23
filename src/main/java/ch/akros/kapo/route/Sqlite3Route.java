@@ -7,9 +7,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SqlLite3Route extends AbstractRouteBuilder {
+public class Sqlite3Route extends AbstractRouteBuilder {
 
-  SqlLite3Route(final ApplicationArguments arguments) {
+  Sqlite3Route(final ApplicationArguments arguments) {
     super(arguments);
   }
 
@@ -17,17 +17,25 @@ public class SqlLite3Route extends AbstractRouteBuilder {
   public void configure() throws Exception {
     final var outoutPath = getTargetPath("sqllite");
     final var toFile = "file:".concat(outoutPath);
-    from("direct:sqlLiteRoute")
+
+    onException(Exception.class)
+        .onExceptionOccurred(onExceptionProcessor())
+        .continued(true)
+        .maximumRedeliveries(0);
+
+    from("direct:sqliteRoute")
         .process(tikaProcessor())
         .process(fileMetadataProcessor())
         .log("[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]")
         .choice()
         .when(isIphoneSmsDB())
-          .to(toFile)
-          .to("direct:iphoneSmsDbRoute")
+        .to(toFile)
+        .to("direct:iphoneSmsDbRoute")
         .otherwise()
-          .log("[SQLLite3][${file:name}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsuported SQLLite3 database][${in.header['TikaMetadata']}]")
-          .to(toFile);
+        //.log("[SQLLite3][${file:name}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsuported SQLLite3 database][${in.header['TikaMetadata']}]")
+        .to(toFile)
+        .to("direct:unknownSqliteDbRoute")
+        ;
   }
 
   private Predicate isIphoneSmsDB() {

@@ -3,7 +3,6 @@ package ch.akros.kapo.route;
 import static java.util.Objects.nonNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -26,7 +25,12 @@ public class FileScannerRoute extends AbstractRouteBuilder {
   @Override
   public void configure() throws Exception {
     final var sourcePath = getOptionValue("source", "/source");
-    final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&idempotentRepository=#repo", sourcePath);
+    final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&maxMessagesPerPoll=1000&idempotentRepository=#repo",
+        sourcePath);
+    onException(Exception.class)
+        .onExceptionOccurred(onExceptionProcessor())
+        .continued(true)
+        .maximumRedeliveries(0);
     from(fromURI)
         .process(e -> scanComplete.set(Objects.isNull(e.getIn().getBody())))
         .filter(e -> Objects.nonNull(e.getIn().getBody()))
@@ -43,11 +47,10 @@ public class FileScannerRoute extends AbstractRouteBuilder {
         try {
           final var mediaType = tika.detect(file);
           e.getIn().setHeader("CamelFileMediaType", mediaType);
-        } catch (final IOException e1) {
-          log.error("Fialed to detect tika media type. Error: {}", e.getMessage());
+        } catch (final Exception e1) {
+          log.warn("[{}][{}]", e1.getClass(), e1.getMessage());
         }
       }
     };
   }
-
 }

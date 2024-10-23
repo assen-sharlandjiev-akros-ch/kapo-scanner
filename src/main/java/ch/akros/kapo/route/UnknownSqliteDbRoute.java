@@ -2,19 +2,16 @@ package ch.akros.kapo.route;
 
 import static org.apache.camel.Exchange.FILE_NAME;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
-import ch.akros.kapo.service.IphoneMessagesDbParser;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
-public class IphoneSmsDbRoute extends AbstractRouteBuilder {
+public class UnknownSqliteDbRoute extends AbstractRouteBuilder {
 
-  IphoneSmsDbRoute(final ApplicationArguments arguments) {
+  UnknownSqliteDbRoute(final ApplicationArguments arguments) {
     super(arguments);
   }
 
@@ -26,8 +23,7 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
     .onExceptionOccurred(onExceptionProcessor())
     .continued(true)
     .maximumRedeliveries(0);
-    from("direct:iphoneSmsDbRoute")
-        .process(iphoneMessageDbProcessor())
+    from("direct:unknownSqliteDbRoute")
         .setBody(header("fileMetadata"))
         .setHeader(FILE_NAME, header("fileMetadataJsonFileName"))
         .marshal().json()
@@ -35,18 +31,6 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
         .setBody(header("TikaText"))
         .setHeader(FILE_NAME, header("tikaTextFileName"))
         .to(toFile);
-  }
-
-  private Processor iphoneMessageDbProcessor() {
-    return e -> {
-      final var dbFilePath = e.getIn().getHeader(Exchange.FILE_PATH, String.class);
-      try {
-        final var parser = new IphoneMessagesDbParser(dbFilePath);
-        parser.parse();
-      } catch (final Exception ex) {
-        log.error(ex.getMessage(), ex);
-      }
-    };
   }
 
 }
