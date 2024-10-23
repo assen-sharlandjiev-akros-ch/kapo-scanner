@@ -7,7 +7,7 @@ import org.apache.camel.Processor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
-import ch.akros.kapo.service.IphoneMessagesDbParser;
+import ch.akros.kapo.service.iphone_sms.IphoneMessagesDbParser;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
