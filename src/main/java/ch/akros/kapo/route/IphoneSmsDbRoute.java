@@ -34,7 +34,13 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
         .to(toFile)
         .setBody(header("TikaText"))
         .setHeader(FILE_NAME, header("tikaTextFileName"))
+        .to(toFile)
+        .process(iphoneMessageDbProcessor())
+        .split(body())
+        .setHeader(FILE_NAME, simple("${body.fileName()}"))
+        .setBody(simple("${body.content}"))
         .to(toFile);
+
   }
 
   private Processor iphoneMessageDbProcessor() {
@@ -42,7 +48,8 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
       final var dbFilePath = e.getIn().getHeader(Exchange.FILE_PATH, String.class);
       try {
         final var parser = new IphoneMessagesDbParser(dbFilePath);
-        parser.parse();
+        final var chats = parser.parse();
+        e.getIn().setBody(chats);
       } catch (final Exception ex) {
         log.error(ex.getMessage(), ex);
       }

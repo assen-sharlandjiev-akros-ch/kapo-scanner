@@ -34,11 +34,10 @@ public class Sqlite3Route extends AbstractRouteBuilder {
         .otherwise()
         //.log("[SQLLite3][${file:name}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsuported SQLLite3 database][${in.header['TikaMetadata']}]")
         .to(toFile)
-        .to("direct:unknownSqliteDbRoute")
-        ;
+        .to("direct:unknownSqliteDbRoute");
   }
 
   private Predicate isIphoneSmsDB() {
-    return exchange -> "iphoneSms.db".equals(exchange.getIn().getHeader(FILE_NAME));
+    return exchange -> "sms.db".equals(exchange.getIn().getHeader(FILE_NAME));
   }
 }

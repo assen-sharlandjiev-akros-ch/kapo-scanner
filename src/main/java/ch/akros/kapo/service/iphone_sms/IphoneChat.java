@@ -9,6 +9,6 @@ public class IphoneChat {
   private final String content;
 
   public String fileName() {
-    return String.format("%s-%s.txt", from, to);
+    return String.format("%s-%s.txt", from.replace("+",""), to.replace("+",""));
   }
 }
