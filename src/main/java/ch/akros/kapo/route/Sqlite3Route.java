@@ -26,7 +26,7 @@ public class Sqlite3Route extends AbstractRouteBuilder {
     from("direct:sqliteRoute")
         .process(tikaProcessor())
         .process(fileMetadataProcessor())
-        .log("[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]")
+        .log("[${file:name}][ContentType: ${in.header['CamelFileMediaType']}]")
         .choice()
         .when(isIphoneSmsDB())
         .to(toFile)

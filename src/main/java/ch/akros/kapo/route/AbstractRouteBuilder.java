@@ -1,6 +1,5 @@
 package ch.akros.kapo.route;
 
-import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.camel.Exchange.EXCEPTION_CAUGHT;
 import static org.apache.camel.Exchange.FILE_NAME;
@@ -40,14 +39,10 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
 
   AbstractRouteBuilder(final ApplicationArguments arguments) {
     this.arguments = arguments;
-    try {
-      this.tika = new Tika();
-    } catch (final Exception e) {
-      log.error("Failed to instantiate Tika");
-    }
-    jacksonDataFormat = new JacksonDataFormat();
-    jacksonDataFormat.setModuleClassNames("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");
-    jacksonDataFormat.setAutoDiscoverObjectMapper(true);
+    this.tika = new Tika();
+    this.jacksonDataFormat = new JacksonDataFormat();
+    this.jacksonDataFormat.setModuleClassNames("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule");
+    this.jacksonDataFormat.setAutoDiscoverObjectMapper(true);
   }
 
   protected List<String> getNonOptionArgs() {
@@ -77,15 +72,13 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       final var parser = new AutoDetectParser();
       final var handler = new BodyContentHandler(Integer.MAX_VALUE);
       final var metadata = new Metadata();
-      if (nonNull(tika)) {
-        try (final var fos = new FileInputStream(file)) {
-          parser.parse(fos, handler, metadata);
-          final var text = handler.toString();
-          e.getIn().setHeader("TikaText", text);
-          e.getIn().setHeader("TikaMetadata", metadata);
-        } catch (final Exception ex) {
-          log.error("[TEXT][Fialed to extract text from: {}][Error: {}]", file.getAbsolutePath(), ex.getMessage());
-        }
+      try (final var fos = new FileInputStream(file)) {
+        parser.parse(fos, handler, metadata);
+        final var text = handler.toString();
+        e.getIn().setHeader("TikaText", text);
+        e.getIn().setHeader("TikaMetadata", metadata);
+      } catch (final Exception ex) {
+        log.error("[TEXT][Fialed to extract text from: {}][Error: {}]", file.getAbsolutePath(), ex.getMessage());
       }
     };
   }
@@ -99,8 +92,7 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       final var fileName = e.getIn().getHeader(FILE_NAME, String.class);
       final var fileMetadataJsonFileName = getFullPath(fileName).concat(getBaseName(fileName)).concat(".json");
       final var tikaTextFileName = getFullPath(fileName).concat(getBaseName(fileName)).concat(".txt");
-      final var tikaMedadataHashMap = Arrays.stream(tikaMedadata.names())
-        .collect(toMap(Function.identity(), tikaMedadata::get));
+      final var tikaMedadataHashMap = Arrays.stream(tikaMedadata.names()).collect(toMap(Function.identity(), tikaMedadata::get));
       fileMetadata.setId(e.getExchangeId());
       fileMetadata.setFileName(e.getIn().getHeader(Exchange.FILE_NAME_ONLY, String.class));
       fileMetadata.setLocation(e.getIn().getHeader(Exchange.FILE_PATH, String.class));
@@ -114,7 +106,6 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       e.getIn().setHeader("tikaTextFileName", tikaTextFileName);
     };
   }
-
 
   protected Processor onExceptionProcessor() {
     return exchange -> {

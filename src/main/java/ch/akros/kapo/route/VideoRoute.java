@@ -13,12 +13,14 @@ public class VideoRoute extends AbstractRouteBuilder {
   @Override
   public void configure() throws Exception {
     final var outoutPath = getTargetPath("video");
+
     onException(Exception.class)
-    .onExceptionOccurred(onExceptionProcessor())
-    .continued(true)
-    .maximumRedeliveries(0);
+        .onExceptionOccurred(onExceptionProcessor())
+        .continued(true)
+        .maximumRedeliveries(0);
+
     from("direct:videoRoute")
-        .log("[VIDEO][${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]")
+        .log("[VIDEO][${file:name}][ContentType: ${in.header['CamelFileMediaType']}]")
         .to("file:".concat(outoutPath));
   }
 

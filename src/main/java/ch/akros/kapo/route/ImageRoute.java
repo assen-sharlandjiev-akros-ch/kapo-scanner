@@ -23,7 +23,7 @@ public class ImageRoute extends AbstractRouteBuilder {
         .to(toFile)
         .process(tikaProcessor())
         .process(fileMetadataProcessor())
-        .log("[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}]")
+        .log("[${file:name}][ContentType: ${in.header['CamelFileMediaType']}]")
         .setBody(simple("${in.header[fileMetadata]}"))
         .setHeader(Exchange.FILE_NAME, simple("${in.header[fileMetadataJsonFileName]}"))
         .marshal().json()

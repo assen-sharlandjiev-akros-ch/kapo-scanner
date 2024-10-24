@@ -25,7 +25,7 @@ public class ContentTypeRoute extends RouteBuilder {
         .when(simple("${header.CamelFileMediaType} startsWith 'application/x-sqlite3'"))
           .to("direct:sqliteRoute")
         .otherwise()
-          .log(WARN, "[${file:name}][ContentType: ${in.header['CamelFileContentType']}][Tika MediaType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
+          .log(WARN, "[${file:name}][ContentType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
   }
 
 }

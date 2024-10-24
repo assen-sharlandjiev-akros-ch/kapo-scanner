@@ -27,7 +27,7 @@ public class IphoneMessagesDbParser {
     dataSource.setDriverClassName(JDBC.class.getName());
     dataSource.setUrl("jdbc:sqlite:".concat(dbFilePath));
     jdbcTemplate = new JdbcTemplate(dataSource);
-    jdbcTemsplate.afterPropertiesSet();
+    jdbcTemplate.afterPropertiesSet();
   }
 
   public List<IphoneChat> parse() {
@@ -38,12 +38,12 @@ public class IphoneMessagesDbParser {
     final var iphoneChatList = new ArrayList<IphoneChat>();
     final var stingBuilder = new StringBuilder();
     for (int i = 0; i < contacts.size(); i++) {
-      String phoneNumber = contacts.get(i);
+      final String phoneNumber = contacts.get(i);
       final var messagesList = findMessagesBetweenTwoNumbers(myNumber, phoneNumber);
 
-      for (IphoneMessage message : messagesList) {
-        String sender = message.isFromMe() ? "Me(" + myNumber + ")" : phoneNumber;
-        String receiver = message.isFromMe() ? phoneNumber : "Me(" + myNumber + ")";
+      for (final IphoneMessage message : messagesList) {
+        final String sender = message.isFromMe() ? "Me(" + myNumber + ")" : phoneNumber;
+        final String receiver = message.isFromMe() ? phoneNumber : "Me(" + myNumber + ")";
         stingBuilder.append("[" + message.getMessageType() + "]" + "[" + message.getMessageSentDate() + "] " + sender + " to " + receiver + ": " + message
             .getMessageContent() + "\n");
       }
@@ -66,7 +66,7 @@ public class IphoneMessagesDbParser {
         """, String.class));
   }
 
-  public List<IphoneMessage> findMessagesBetweenTwoNumbers(String number1, String number2) {
+  public List<IphoneMessage> findMessagesBetweenTwoNumbers(final String number1, final String number2) {
     final var sql = """
         SELECT m.text, m.service, m.date, m.is_from_me FROM message m
         JOIN handle h ON h.rowid = m.handle_id
