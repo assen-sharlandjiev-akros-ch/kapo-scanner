@@ -20,14 +20,21 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getTargetPath("sqllite");
+    final var outoutPath = getTargetPath();
     final var toFile = "file:".concat(outoutPath);
+
     onException(Exception.class)
-    .onExceptionOccurred(onExceptionProcessor())
-    .continued(true)
-    .maximumRedeliveries(0);
+        .onExceptionOccurred(onExceptionProcessor())
+        .continued(true)
+        .maximumRedeliveries(0);
+
     from("direct:iphoneSmsDbRoute")
-        .process(iphoneMessageDbProcessor())
+        .setHeader("contentTypePath", constant("Communications/SMS"))
+        .process(tikaProcessor())
+        .process(fileMetadataProcessor())
+        .log("[${file:name}][ContentType: ${in.header['CamelFileMediaType']}]")
+        .setHeader(FILE_NAME, header("copyFileName"))
+        .to(toFile)
         .setBody(header("fileMetadata"))
         .setHeader(FILE_NAME, header("fileMetadataJsonFileName"))
         .marshal().json()
@@ -37,10 +44,9 @@ public class IphoneSmsDbRoute extends AbstractRouteBuilder {
         .to(toFile)
         .process(iphoneMessageDbProcessor())
         .split(body())
-        .setHeader(FILE_NAME, simple("${body.fileName()}"))
+        .setHeader(FILE_NAME, simple("${in.header['filePathPrefix']}-${body.fileName()}"))
         .setBody(simple("${body.content}"))
         .to(toFile);
-
   }
 
   private Processor iphoneMessageDbProcessor() {

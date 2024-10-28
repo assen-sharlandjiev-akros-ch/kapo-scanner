@@ -20,7 +20,7 @@ public class TextRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var outoutPath = getTargetPath("text");
+    final var outoutPath = getTargetPath();
     final var toFile = "file:".concat(outoutPath);
 
     onException(Exception.class)
@@ -29,10 +29,12 @@ public class TextRoute extends AbstractRouteBuilder {
         .maximumRedeliveries(0);
 
     from("direct:textRoute")
-        .to(toFile)
+        .setHeader("contentTypePath", constant("Documents"))
         .process(tikaProcessor())
         .process(fileMetadataProcessor())
         .log("[${file:name}][ContentType: ${in.header['CamelFileMediaType']}]")
+        .setHeader(FILE_NAME, header("copyFileName"))
+        .to(toFile)
         .setBody(header("fileMetadata"))
         .setHeader(FILE_NAME, header("fileMetadataJsonFileName"))
         .marshal().json()

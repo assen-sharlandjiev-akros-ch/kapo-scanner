@@ -2,7 +2,6 @@ package ch.akros.kapo.route;
 
 import java.io.File;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;
@@ -12,11 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileScannerRoute extends AbstractRouteBuilder {
 
-  private final AtomicBoolean scanComplete;
 
-  FileScannerRoute(final ApplicationArguments arguments, final AtomicBoolean scanComplete) {
+  FileScannerRoute(final ApplicationArguments arguments) {
     super(arguments);
-    this.scanComplete = scanComplete;
   }
 
   @Override
@@ -31,7 +28,6 @@ public class FileScannerRoute extends AbstractRouteBuilder {
         .maximumRedeliveries(0);
 
     from(fromURI)
-        .process(e -> scanComplete.set(Objects.isNull(e.getIn().getBody())))
         .filter(e -> Objects.nonNull(e.getIn().getBody()))
         .process(contentTypeProcessor())
         .to("direct:contentTypeRoute");
