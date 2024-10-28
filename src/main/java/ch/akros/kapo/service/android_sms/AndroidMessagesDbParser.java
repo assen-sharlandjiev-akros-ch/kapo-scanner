@@ -26,8 +26,7 @@ public class AndroidMessagesDbParser extends AbstractDbParser {
       }
 
       for (final AndroidMessage message : messagesList) {
-        stingBuilder.append("[" + message.getMessageDirection() + "]" + "[" + message.getMessageContent() + "] "
-            + message.getMessageContent() + "[" + message.getMessageDate() + "]" + "\n");
+        stingBuilder.append("[" + message.getMessageDirection() + "]" + "[" + message.getMessageContent() + "] " + "[" + message.getMessageDate() + "]" + "\n");
       }
 
       final var newChat = new AndroidChat(phoneNumber, stingBuilder.toString());
