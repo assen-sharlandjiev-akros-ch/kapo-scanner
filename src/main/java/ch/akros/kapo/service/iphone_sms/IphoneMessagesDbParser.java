@@ -1,33 +1,18 @@
 package ch.akros.kapo.service.iphone_sms;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.sqlite.JDBC;
-
+import ch.akros.kapo.service.AbstractDbParser;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class IphoneMessagesDbParser {
+public class IphoneMessagesDbParser extends AbstractDbParser {
 
-  private final JdbcTemplate jdbcTemplate;
-
-  public IphoneMessagesDbParser(final String dbFilePath) throws FileNotFoundException {
-    final var file = new File(dbFilePath);
-    if (!file.exists()) {
-      throw new FileNotFoundException();
-    }
-
-    final var dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName(JDBC.class.getName());
-    dataSource.setUrl("jdbc:sqlite:".concat(dbFilePath));
-    jdbcTemplate = new JdbcTemplate(dataSource);
-    jdbcTemplate.afterPropertiesSet();
+  public IphoneMessagesDbParser(String dbFilePath) throws FileNotFoundException {
+    super(dbFilePath);
   }
 
   public List<IphoneChat> parse() {
