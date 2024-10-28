@@ -18,7 +18,7 @@ class IphoneMessagesDbParserTest {
     final var parser = new IphoneMessagesDbParser(dbFilePath);
     final var myNumber = parser.findMyNumber();
     final var contacts = parser.findAllContacts();
-    var iphoneChatList = parser.parse();
+    final var iphoneChatList = parser.parse();
 
     assertTrue(contacts.size() > 2);
     assertTrue(myNumber.isPresent());
