@@ -14,6 +14,8 @@ public class ContentTypeRoute extends RouteBuilder {
       .choice()
         .when(simple("${header.CamelFileMediaType} startsWith 'image'"))
           .to("direct:imageRoute")
+       . when(simple("${header.CamelFileMediaType} startsWith 'audio'"))
+          .to("direct:audioRoute")
         .when(simple("${header.CamelFileMediaType} startsWith 'video'"))
           .to("direct:videoRoute")
         .when(simple("${header.CamelFileMediaType} startsWith 'text'"))
