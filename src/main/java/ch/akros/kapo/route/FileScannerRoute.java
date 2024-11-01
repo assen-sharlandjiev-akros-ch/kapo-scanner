@@ -18,15 +18,15 @@ public class FileScannerRoute extends AbstractRouteBuilder {
   @Override
   public void configure() throws Exception {
     final var sourcePath = getOptionValue("source", "/source");
-    final var fromURI = String.format("file://%s?noop=true&recursive=true&maxMessagesPerPoll=1000&idempotentRepository=#mapIdempotentRepository&delay=100", sourcePath);
+    final var fromURI = String.format("file://%s?noop=true&recursive=true&maxMessagesPerPoll=1000&idempotentRepository=#memoryIdempotentRepository&delay=100", sourcePath);
+    //final var fromURI = String.format("file://%s?recursive=true&maxMessagesPerPoll=1000&delay=100", sourcePath);
     onException(Exception.class)
         .onExceptionOccurred(onExceptionProcessor())
         .continued(true)
         .maximumRedeliveries(0);
 
     from(fromURI)
-        .threads(10, 20)
-        //.log("${header.CamelFileNameOnly}")
+        .threads(1, 2)
         .process(contentTypeProcessor())
         .to("direct:contentTypeRoute");
   }

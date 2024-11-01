@@ -19,10 +19,12 @@ public class KapoScannerConfiguration {
     return new MapIdempotentRepository();
   }
 
+  @Bean
   IdempotentRepository memoryIdempotentRepository() {
     return MemoryIdempotentRepository.memoryIdempotentRepository(Integer.MAX_VALUE);
   }
 
+  @Bean
   IdempotentRepository fileIdempotentRepository(final ApplicationArguments arguments) {
     final var sourcePath = Optional.ofNullable(arguments.getOptionValues("source")).map(l -> l.getFirst()).orElse("/source");
     final var file = Path.of("/", FilenameUtils.getPath(sourcePath), "idempotentRepository.txt").toFile();
