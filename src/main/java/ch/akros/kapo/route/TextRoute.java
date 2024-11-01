@@ -41,6 +41,7 @@ public class TextRoute extends AbstractRouteBuilder {
         .to(toFile)
         .setBody(header("TikaText"))
         .setHeader(FILE_NAME, header("tikaTextFileName"))
+        .filter(simple("${body} != null"))
         .to(toFile);
   }
 }

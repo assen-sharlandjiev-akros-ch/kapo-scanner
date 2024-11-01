@@ -1,7 +1,6 @@
 package ch.akros.kapo.route;
 
-import static org.apache.camel.LoggingLevel.WARN;
-
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
@@ -27,7 +26,7 @@ public class ContentTypeRoute extends RouteBuilder {
         .when(simple("${header.CamelFileMediaType} startsWith 'application/x-sqlite3'"))
           .to("direct:sqliteRoute")
         .otherwise()
-          .log(WARN, "[${file:name}][ContentType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
+          .log(LoggingLevel.TRACE, "[${file:name}][ContentType: ${in.header['CamelFileMediaType']}][Unsupported mime type]");
   }
 
 }

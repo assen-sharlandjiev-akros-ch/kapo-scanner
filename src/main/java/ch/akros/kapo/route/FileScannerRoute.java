@@ -1,7 +1,6 @@
 package ch.akros.kapo.route;
 
 import java.io.File;
-import java.util.Objects;
 
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;
@@ -19,16 +18,15 @@ public class FileScannerRoute extends AbstractRouteBuilder {
   @Override
   public void configure() throws Exception {
     final var sourcePath = getOptionValue("source", "/source");
-    final var fromURI = String.format("file://%s?noop=true&recursive=true&sendEmptyMessageWhenIdle=true&maxMessagesPerPoll=1000&idempotentRepository=#repo",
-        sourcePath);
-
+    final var fromURI = String.format("file://%s?noop=true&recursive=true&maxMessagesPerPoll=1000&idempotentRepository=#mapIdempotentRepository&delay=100", sourcePath);
     onException(Exception.class)
         .onExceptionOccurred(onExceptionProcessor())
         .continued(true)
         .maximumRedeliveries(0);
 
     from(fromURI)
-        .filter(e -> Objects.nonNull(e.getIn().getBody()))
+        .threads(10, 20)
+        //.log("${header.CamelFileNameOnly}")
         .process(contentTypeProcessor())
         .to("direct:contentTypeRoute");
   }
