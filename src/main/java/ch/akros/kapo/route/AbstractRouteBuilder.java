@@ -105,11 +105,10 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       final var fileMetadata = new FileMetadata();
       final var fileName = e.getIn().getHeader(FILE_NAME, String.class);
       final var filePathPrefix =  String.format("/%s/%s/%s/%s", dossierDevicePath, contentTypePath, dir, uuid);
-      final var copyFileName = String.format("/%s/%s/%s/%s-%s", dossierDevicePath, contentTypePath, dir, uuid, FilenameUtils.getName(fileName));
-      final var fileMetadataJsonFileName = String.format("/%s/%s/%s/%s-%s", dossierDevicePath, contentTypePath, dir, uuid, getBaseName(fileName).concat(
-          ".json"));
-      final var tikaTextFileName = String.format("/%s/%s/%s/%s-%s", dossierDevicePath, contentTypePath, dir, uuid, getBaseName(fileName)).concat(".txt");
-      final var tikaMedadataHashMap = Arrays.stream(tikaMedadata.names()).collect(toMap(Function.identity(), tikaMedadata::get));
+      final var copyFileName = String.format("/%s/%s/%s/%s_%s", dossierDevicePath, contentTypePath, dir, uuid, FilenameUtils.getName(fileName));
+      final var fileMetadataJsonFileName = String.format("/%s/%s/%s/%s_%s", dossierDevicePath, contentTypePath, dir, uuid, FilenameUtils.getName(fileName).concat(".json"));
+      final var tikaTextFileName = String.format("/%s/%s/%s/%s_%s", dossierDevicePath, contentTypePath, dir, uuid, getBaseName(fileName)).concat(".txt");
+      final Map<String, Object> tikaMedadataHashMap = Arrays.stream(tikaMedadata.names()).collect(toMap(Function.identity(), tikaMedadata::get));
       fileMetadata.setId(e.getExchangeId());
       fileMetadata.setFileName(e.getIn().getHeader(Exchange.FILE_NAME_ONLY, String.class));
       fileMetadata.setLocation(e.getIn().getHeader(Exchange.FILE_PATH, String.class));
@@ -117,7 +116,7 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       fileMetadata.setCreationDateTime(attr.creationTime().toInstant());
       fileMetadata.setChangeDateTime(attr.lastModifiedTime().toInstant());
       fileMetadata.setAccessDateTime(attr.lastAccessTime().toInstant());
-      fileMetadata.setProperties(Map.of("tikaMetadata", tikaMedadataHashMap));
+      fileMetadata.setProperties(tikaMedadataHashMap);
       e.getIn().setHeader("filePathPrefix", filePathPrefix);
       e.getIn().setHeader("copyFileName", copyFileName);
       e.getIn().setHeader("fileMetadata", fileMetadata);

@@ -1,6 +1,7 @@
 package ch.akros.kapo.route;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.apache.camel.Processor;
 import org.apache.camel.component.file.GenericFile;
@@ -10,16 +11,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileScannerRoute extends AbstractRouteBuilder {
 
-
   FileScannerRoute(final ApplicationArguments arguments) {
     super(arguments);
   }
 
   @Override
   public void configure() throws Exception {
+    final var movePath = Path.of(getOptionValue("target", "/target"), "Archive/${file:name}").toString();
     final var sourcePath = getOptionValue("source", "/source");
-    final var fromURI = String.format("file://%s?noop=true&recursive=true&maxMessagesPerPoll=1000&idempotentRepository=#memoryIdempotentRepository&delay=100", sourcePath);
-    //final var fromURI = String.format("file://%s?recursive=true&maxMessagesPerPoll=1000&delay=100", sourcePath);
+    final var fromURI = String.format("file://%s?recursive=true&maxMessagesPerPoll=1000&delay=100&move=%s&moveFailed=%s", sourcePath, movePath, movePath);
     onException(Exception.class)
         .onExceptionOccurred(onExceptionProcessor())
         .continued(true)
