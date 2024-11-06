@@ -1,5 +1,7 @@
 package ch.akros.kapo.route;
 
+import java.util.Objects;
+
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;
 import org.springframework.boot.ApplicationArguments;
@@ -38,6 +40,9 @@ public class ContentTypeRoute extends AbstractRouteBuilder {
   private final Predicate isTextDocument() {
     return exchange -> {
       final var contentType = exchange.getIn().getHeader("CamelFileMediaType", String.class);
+      if (Objects.isNull(contentType)) {
+        return false;
+      }
       return props.getDocumentContentTypes().stream().anyMatch(contentTypePrefix -> contentType.startsWith(contentTypePrefix));
     };
   }
