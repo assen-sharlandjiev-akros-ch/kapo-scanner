@@ -9,6 +9,6 @@ To create the docker image, run the following maven goal:
 To run the scanner application execute:
 
 ```
-docker run --rm -v $HOME/Downloads/source:/source -v $HOME/Downloads/target:/target  docker.io/library/kapo-scanner:0.0.1-SNAPSHOT
+docker run --rm -v $HOME/kapo/pipeline:/pipeline  docker.io/library/kapo-scanner:0.0.1-SNAPSHOT
 ```
 

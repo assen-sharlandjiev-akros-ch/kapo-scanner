@@ -17,8 +17,9 @@ public class FileScannerRoute extends AbstractRouteBuilder {
 
   @Override
   public void configure() throws Exception {
-    final var movePath = Path.of(getOptionValue("target", "/target"), "Archive/${file:name}").toString();
-    final var sourcePath = getOptionValue("source", "/source");
+    final var pipelinePath = getOptionValue("pipeline", "/pipeline");
+    final var sourcePath = Path.of(pipelinePath, "/input/Cellebrite").toString();
+    final var movePath = Path.of(pipelinePath, "/output/Archive/${file:name}").toString();
     final var fromURI = String.format("file://%s?recursive=true&maxMessagesPerPoll=1000&delay=100&move=%s&moveFailed=%s", sourcePath, movePath, movePath);
     onException(Exception.class)
         .onExceptionOccurred(onExceptionProcessor())
