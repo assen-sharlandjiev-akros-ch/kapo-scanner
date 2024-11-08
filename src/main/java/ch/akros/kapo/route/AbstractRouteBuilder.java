@@ -99,7 +99,9 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       final var contentTypePath = e.getIn().getHeader("contentTypePath", String.class);
       final var relativeSourcePath = e.getIn().getHeader(Exchange.FILE_PATH, String.class).replaceAll(sourcePath, "");
       final var pathSegments = Arrays.asList(relativeSourcePath.split(pathSeparator));
-      final var dossierDevicePath = String.join(File.separator, List.of(pathSegments.get(2))); // , pathSegments.get(2)));
+      final var dossierPath = String.join(File.separator, List.of(pathSegments.get(2)));
+      final var devicePath = String.join(File.separator, List.of(pathSegments.get(3)));
+      final var dossierDevicePath = Path.of(dossierPath, devicePath).toString();
       final var uuid = UUID.randomUUID().toString();
       final var dir = uuid.substring(0, uuid.indexOf("-"));
       final var file = ((File) e.getIn().getBody(GenericFile.class).getFile());
