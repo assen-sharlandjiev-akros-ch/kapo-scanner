@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -99,8 +100,10 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       final var contentTypePath = e.getIn().getHeader("contentTypePath", String.class);
       final var relativeSourcePath = e.getIn().getHeader(Exchange.FILE_PATH, String.class).replaceAll(sourcePath, "");
       final var pathSegments = Arrays.asList(relativeSourcePath.split(pathSeparator));
-      final var dossierPath = String.join(File.separator, List.of(pathSegments.get(2)));
-      final var devicePath = String.join(File.separator, List.of(pathSegments.get(3)));
+      final var dossierId = pathSegments.get(2);
+      final var deviceId = pathSegments.get(3);
+      final var dossierPath = String.join(File.separator, List.of(dossierId));
+      final var devicePath = String.join(File.separator, List.of(deviceId));
       final var dossierDevicePath = Path.of(dossierPath, devicePath).toString();
       final var uuid = UUID.randomUUID().toString();
       final var dir = uuid.substring(0, uuid.indexOf("-"));
@@ -121,9 +124,12 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       fileMetadata.setCreationDateTime(attr.creationTime().toInstant());
       fileMetadata.setChangeDateTime(attr.lastModifiedTime().toInstant());
       fileMetadata.setAccessDateTime(attr.lastAccessTime().toInstant());
+      fileMetadata.setProperties(new HashMap<String, Object>());
+      fileMetadata.getProperties().put("dossier_id", dossierId);
+      fileMetadata.getProperties().put("Device_id", deviceId);
       if (Objects.nonNull(tikaMedadata)) {
         final Map<String, Object> tikaMedadataHashMap = Arrays.stream(tikaMedadata.names()).collect(toMap(Function.identity(), tikaMedadata::get));
-        fileMetadata.setProperties(tikaMedadataHashMap);
+        fileMetadata.getProperties().putAll(tikaMedadataHashMap);
       }
 
       e.getIn().setHeader("filePathPrefix", filePathPrefix);

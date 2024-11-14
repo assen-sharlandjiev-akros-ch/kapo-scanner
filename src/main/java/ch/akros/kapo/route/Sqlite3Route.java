@@ -26,6 +26,8 @@ public class Sqlite3Route extends AbstractRouteBuilder {
         .to("direct:iphoneSmsDbRoute")
         .when(isAndroidSmsDB())
         .to("direct:androidSmsDbRoute")
+        .when(isWhatsAppDb())
+        .to("direct:whatsAppDb")
         .otherwise()
         .to("direct:unknownSqliteDbRoute");
   }
@@ -41,6 +43,13 @@ public class Sqlite3Route extends AbstractRouteBuilder {
     return exchange -> {
       final var fileName = exchange.getIn().getHeader(Exchange.FILE_NAME_ONLY, String.class);
       return "mmssms.db".equalsIgnoreCase(fileName);
+    };
+  }
+
+  private Predicate isWhatsAppDb() {
+    return exchange -> {
+      final var fileName = exchange.getIn().getHeader(Exchange.FILE_NAME_ONLY, String.class);
+      return "msgstore.db".equalsIgnoreCase(fileName) || "wa.db".equalsIgnoreCase(fileName);
     };
   }
 }
