@@ -11,9 +11,9 @@ import lombok.Data;
 public class FileMetadata {
   private String id;
   private String fileName;
-  @JsonProperty("Dossier_id")
+  @JsonProperty("dossier_id")
   private String dossierId;
-  @JsonProperty("Device_id")
+  @JsonProperty("device_id")
   private String deviceId;
   private String location;
   private Long size;
