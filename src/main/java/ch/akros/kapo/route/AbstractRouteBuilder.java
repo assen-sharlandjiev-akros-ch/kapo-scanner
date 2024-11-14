@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -124,12 +123,11 @@ public abstract class AbstractRouteBuilder extends RouteBuilder {
       fileMetadata.setCreationDateTime(attr.creationTime().toInstant());
       fileMetadata.setChangeDateTime(attr.lastModifiedTime().toInstant());
       fileMetadata.setAccessDateTime(attr.lastAccessTime().toInstant());
-      fileMetadata.setProperties(new HashMap<String, Object>());
-      fileMetadata.getProperties().put("dossier_id", dossierId);
-      fileMetadata.getProperties().put("Device_id", deviceId);
+      fileMetadata.setDossierId(dossierId);
+      fileMetadata.setDeviceId(deviceId);
       if (Objects.nonNull(tikaMedadata)) {
         final Map<String, Object> tikaMedadataHashMap = Arrays.stream(tikaMedadata.names()).collect(toMap(Function.identity(), tikaMedadata::get));
-        fileMetadata.getProperties().putAll(tikaMedadataHashMap);
+        fileMetadata.setProperties(tikaMedadataHashMap);
       }
 
       e.getIn().setHeader("filePathPrefix", filePathPrefix);
